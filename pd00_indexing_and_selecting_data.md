@@ -718,3 +718,215 @@ Name: A, dtype: float64
 64  6  7  1  7
 81  6  3  9  4
 ```
+
+* **0024** selecting rows with ```isin``` (for ```Series```)
+```python
+>>> s = df[0]
+>>> s
+0     9
+1     6
+4     2
+9     8
+16    4
+25    1
+36    3
+49    6
+64    6
+81    6
+Name: 0, dtype: int32
+>>> s[s.isin([2, 6])]
+1     6
+4     2
+49    6
+64    6
+81    6
+Name: 0, dtype: int32
+```
+
+## selecting rows by conditions (advanced 2 : query method)
+* **0025** query method
+```python
+>>> df
+    x  y  z  a
+0   9  6  5  6
+1   6  0  4  6
+4   2  1  7  5
+9   8  8  4  1
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+64  6  7  1  7
+81  6  3  9  4
+>>> df.query('x < y')
+    x  y  z  a
+49  6  8  2  7
+64  6  7  1  7
+>>> df.query('x == y')
+    x  y  z  a
+9   8  8  4  1
+25  1  1  4  1
+```
+
+* **0026** query method with ```and``` and ```or``` (1)
+```python
+>>> df.query('(x >= y) & (z >= a)')
+    x  y  z  a
+4   2  1  7  5
+9   8  8  4  1
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+81  6  3  9  4
+>>> df.query('(x < y) | (z < a)')
+    x  y  z  a
+0   9  6  5  6
+1   6  0  4  6
+49  6  8  2  7
+64  6  7  1  7
+>>> df.query('(x < y) & (z >= a)')
+Empty DataFrame
+Columns: [x, y, z, a]
+Index: []
+```
+
+* **0027** query method with ```and``` and ```or``` (2)
+```python
+>>> df.query('x >= y and z >= a')
+    x  y  z  a
+4   2  1  7  5
+9   8  8  4  1
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+81  6  3  9  4
+>>> df.query('x < y or z < a')
+    x  y  z  a
+0   9  6  5  6
+1   6  0  4  6
+49  6  8  2  7
+64  6  7  1  7
+>>> df.query('x < y and z >= a')
+Empty DataFrame
+Columns: [x, y, z, a]
+Index: []
+```
+
+* **0028** query method with ```and``` and ```or``` (3)
+```python
+>>> df.query('x <= y <= z')
+    x  y  z  a
+25  1  1  4  1
+>>> df.query('x >= y >= z')
+   x  y  z  a
+0  9  6  5  6
+9  8  8  4  1
+>>> df.query('x <= y >= z')
+    x  y  z  a
+9   8  8  4  1
+49  6  8  2  7
+64  6  7  1  7
+>>> df.query('x >= 5 and y >= 5')
+    x  y  z  a
+0   9  6  5  6
+9   8  8  4  1
+49  6  8  2  7
+64  6  7  1  7
+>>> df.query('x < 5 or y < 5')
+    x  y  z  a
+1   6  0  4  6
+4   2  1  7  5
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+81  6  3  9  4
+>>> df.query('x < 5 and y >= 5')
+Empty DataFrame
+Columns: [x, y, z, a]
+Index: []
+```
+
+* **0029** query method with ```in``` and ```not in```
+```python
+>>> df.query('x in y')
+    x  y  z  a
+1   6  0  4  6
+9   8  8  4  1
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+64  6  7  1  7
+81  6  3  9  4
+>>> df.query('y in x')
+    x  y  z  a
+0   9  6  5  6
+4   2  1  7  5
+9   8  8  4  1
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+81  6  3  9  4
+>>> df.query('x in y and y in x')
+    x  y  z  a
+9   8  8  4  1
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+81  6  3  9  4
+>>> df.query('x not in y')
+    x  y  z  a
+0   9  6  5  6
+4   2  1  7  5
+16  4  0  5  3
+>>> df.query('y not in x')
+    x  y  z  a
+1   6  0  4  6
+16  4  0  5  3
+64  6  7  1  7
+>>> df.query('x not in y and y not in x')
+    x  y  z  a
+16  4  0  5  3
+```
+
+* **0030** other query method usages
+```python
+>>> df.query('x == [2, 6]')
+    x  y  z  a
+1   6  0  4  6
+4   2  1  7  5
+49  6  8  2  7
+64  6  7  1  7
+81  6  3  9  4
+>>> df.query('x == [2, 6] and y < 4')
+    x  y  z  a
+1   6  0  4  6
+4   2  1  7  5
+81  6  3  9  4
+>>> df.query('x == [2, 6] or y < 4')
+    x  y  z  a
+1   6  0  4  6
+4   2  1  7  5
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+64  6  7  1  7
+81  6  3  9  4
+>>> df.query('x != [2, 6] and y >= 4')
+   x  y  z  a
+0  9  6  5  6
+9  8  8  4  1
+>>> df.query('not x == 6')
+    x  y  z  a
+0   9  6  5  6
+4   2  1  7  5
+9   8  8  4  1
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+>>> df.query('not x == 6 and not y == 1')
+    x  y  z  a
+0   9  6  5  6
+9   8  8  4  1
+16  4  0  5  3
+```
