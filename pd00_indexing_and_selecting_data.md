@@ -607,3 +607,114 @@ Name: A, dtype: float64
 90   -0.234305
 Name: A, dtype: float64
 ```
+
+* **0020** check if the value is in an array
+```python
+>>> df
+   0  1  2  3
+0  9  6  5  6
+1  6  0  4  6
+2  2  1  7  5
+3  8  8  4  1
+4  4  0  5  3
+5  1  1  4  1
+6  3  1  7  1
+7  6  8  2  7
+8  6  7  1  7
+9  6  3  9  4
+>>> df.isin([2, 3, 5, 7])
+       0      1      2      3
+0  False  False   True  False
+1  False  False  False  False
+2   True  False   True   True
+3  False  False  False  False
+4  False  False   True   True
+5  False  False  False  False
+6   True  False   True  False
+7  False  False   True   True
+8  False   True  False   True
+9  False   True  False  False
+```
+
+* **0021** selecting rows with ```isin```
+```python
+>>> df[df[0].isin([3, 6])]
+   0  1  2  3
+1  6  0  4  6
+6  3  1  7  1
+7  6  8  2  7
+8  6  7  1  7
+9  6  3  9  4
+>>> df[df[0].isin([3, 6]) | df[1].isin([1, 2])]
+   0  1  2  3
+1  6  0  4  6
+2  2  1  7  5
+5  1  1  4  1
+6  3  1  7  1
+7  6  8  2  7
+8  6  7  1  7
+9  6  3  9  4
+>>> df[df[0].isin([3, 6]) & df[1].isin([1, 2])]
+   0  1  2  3
+6  3  1  7  1
+```
+
+* **0022** selecting rows with ```isin``` (for index)
+```python
+>>> df[df.index.isin([25, 36, 49])]
+    0  1  2  3
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+>>> df[df.index.isin([25, 36, 49]) | df[0].isin([3, 5, 7])]
+    0  1  2  3
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+>>> df[df.index.isin([25, 36, 49]) | df[0].isin([4, 6, 8])]
+    0  1  2  3
+1   6  0  4  6
+9   8  8  4  1
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+64  6  7  1  7
+81  6  3  9  4
+```
+
+* **0023** selecting rows with ```isin``` (advanced)
+```python
+>>> values = {0: [2, 4, 6, 8], 1: [1, 3, 5, 7]}
+>>> df.isin(values)
+        0      1      2      3
+0   False  False  False  False
+1    True  False  False  False
+4    True   True  False  False
+9    True  False  False  False
+16   True  False  False  False
+25  False   True  False  False
+36  False   True  False  False
+49   True  False  False  False
+64   True   True  False  False
+81   True   True  False  False
+>>> row_mask_1 = df.isin(values).any(1)
+>>> df[row_mask_1]
+    0  1  2  3
+1   6  0  4  6
+4   2  1  7  5
+9   8  8  4  1
+16  4  0  5  3
+25  1  1  4  1
+36  3  1  7  1
+49  6  8  2  7
+64  6  7  1  7
+81  6  3  9  4
+>>> values = {0: [2, 4, 6, 8], 1: [1, 3, 5, 7], 2: list(range(10)), 3: list(range(10))}
+>>> row_mask_0 = df.isin(values).all(1)
+>>> df[row_mask_0]
+    0  1  2  3
+4   2  1  7  5
+64  6  7  1  7
+81  6  3  9  4
+```
